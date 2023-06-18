@@ -57,29 +57,29 @@ runs:
         path: changelog
         token: ${{ inputs.token }}
 
-    - env:
-        CURRENT_TAG: ${{ github.ref_name }}
-      run: |
-        npm --no-git-tag-version version "$CURRENT_TAG"
+#     - env:
+#         CURRENT_TAG: ${{ github.ref_name }}
+#       run: |
+#         npm --no-git-tag-version version "$CURRENT_TAG"
 
-        (
-          cd "$GITHUB_WORKSPACE/changelog";
-          npm i
-        )
+#         (
+#           cd "$GITHUB_WORKSPACE/changelog";
+#           npm i
+#         )
 
-        git fetch origin +refs/tags/*:refs/tags/*
+#         git fetch origin +refs/tags/*:refs/tags/*
 
-        npx conventional-changelog-cli@v2.1.1 --config "changelog/index.js" -r 2 -o "$notes"
+#         npx conventional-changelog-cli@v2.1.1 --config "changelog/index.js" -r 2 -o "$notes"
 
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-          sed -i '' '/^# /d' "$notes"
-        else
-          sed -i '/^# /d' "$notes"
-        fi
+#         if [[ "$OSTYPE" == "darwin"* ]]; then
+#           sed -i '' '/^# /d' "$notes"
+#         else
+#           sed -i '/^# /d' "$notes"
+#         fi
 
-        npx prettier -w "$notes"
-        git reset --hard HEAD
-      shell: bash
+#         npx prettier -w "$notes"
+#         git reset --hard HEAD
+#       shell: bash
 
     - uses: docker/setup-qemu-action@v1
     - uses: docker/setup-buildx-action@v1
