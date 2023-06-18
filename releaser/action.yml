@@ -95,10 +95,9 @@ runs:
         # cat "$notes"
         # clean up ory/changelog checkout
         rm -rf changelog
-
+        #    --mount type=bind,source="$notes",target=/notes.md \
         docker pull --platform linux/amd64 oryd/xgoreleaser:latest
         docker run --privileged --mount type=bind,source="$(pwd)",target=/project \
-            --mount type=bind,source="$notes",target=/notes.md \
             --platform linux/amd64 \
             -e GORELEASER_KEY \
             -e GITHUB_TOKEN \
