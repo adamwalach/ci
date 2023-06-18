@@ -92,7 +92,7 @@ runs:
         DOCKER_USERNAME: ${{ inputs.docker_username }}
         DOCKER_PASSWORD: ${{ inputs.docker_password }}
       run: |
-        cat "$notes"
+        # cat "$notes"
         # clean up ory/changelog checkout
         rm -rf changelog
 
@@ -107,7 +107,7 @@ runs:
             -e DOCKER_PASSWORD \
             -e GORELEASER_CURRENT_TAG \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            oryd/xgoreleaser:latest release --snapshot --skip-publish --release-header "/notes.md" --rm-dist --timeout 60m
+            oryd/xgoreleaser:latest release --snapshot --skip-publish --rm-dist --timeout 60m
 
         git add -A
         git stash || true
