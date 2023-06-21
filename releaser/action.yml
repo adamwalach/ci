@@ -57,29 +57,29 @@ runs:
         path: changelog
         token: ${{ inputs.token }}
 
-    - env:
-        CURRENT_TAG: ${{ github.ref_name }}
-      run: |
-        npm --no-git-tag-version version "$CURRENT_TAG"
+#     - env:
+#         CURRENT_TAG: ${{ github.ref_name }}
+#       run: |
+#         npm --no-git-tag-version version "$CURRENT_TAG"
 
-        (
-          cd "$GITHUB_WORKSPACE/changelog";
-          npm i
-        )
+#         (
+#           cd "$GITHUB_WORKSPACE/changelog";
+#           npm i
+#         )
 
-        git fetch origin +refs/tags/*:refs/tags/*
+#         git fetch origin +refs/tags/*:refs/tags/*
 
-        npx conventional-changelog-cli@v2.1.1 --config "changelog/index.js" -r 2 -o "$notes"
+#         npx conventional-changelog-cli@v2.1.1 --config "changelog/index.js" -r 2 -o "$notes"
 
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-          sed -i '' '/^# /d' "$notes"
-        else
-          sed -i '/^# /d' "$notes"
-        fi
+#         if [[ "$OSTYPE" == "darwin"* ]]; then
+#           sed -i '' '/^# /d' "$notes"
+#         else
+#           sed -i '/^# /d' "$notes"
+#         fi
 
-        npx prettier -w "$notes"
-        git reset --hard HEAD
-      shell: bash
+#         npx prettier -w "$notes"
+#         git reset --hard HEAD
+#       shell: bash
 
     - uses: docker/setup-qemu-action@v1
     - uses: docker/setup-buildx-action@v1
@@ -92,13 +92,12 @@ runs:
         DOCKER_USERNAME: ${{ inputs.docker_username }}
         DOCKER_PASSWORD: ${{ inputs.docker_password }}
       run: |
-        cat "$notes"
+        # cat "$notes"
         # clean up ory/changelog checkout
         rm -rf changelog
-
+        #    --mount type=bind,source="$notes",target=/notes.md \
         docker pull --platform linux/amd64 oryd/xgoreleaser:latest
         docker run --privileged --mount type=bind,source="$(pwd)",target=/project \
-            --mount type=bind,source="$notes",target=/notes.md \
             --platform linux/amd64 \
             -e GORELEASER_KEY \
             -e GITHUB_TOKEN \
@@ -107,7 +106,7 @@ runs:
             -e DOCKER_PASSWORD \
             -e GORELEASER_CURRENT_TAG \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            oryd/xgoreleaser:latest release --release-header "/notes.md" --rm-dist --timeout 60m
+            oryd/xgoreleaser:latest release --snapshot --skip-publish --skip-sign --clean --timeout 60m
 
         git add -A
         git stash || true
